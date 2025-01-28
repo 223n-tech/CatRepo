@@ -1,5 +1,7 @@
 # CatReport
 
+![ScreenShot](https://raw.githubusercontent.com/223n-tech/CatRepo/refs/heads/develop/1.png)
+
 ## なにをするもの？
 
 - Webページのトラブルシューティングをするための情報を収集・ダウンロードができます。
