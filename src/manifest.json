@@ -1,0 +1,31 @@
+{
+    "manifest_version": 3,
+    "name": "CatRepo - BETA",
+    "version": "0.1",
+    "description": "Gather the information necessary to report a problem with a web page. THIS EXTENSION IS FOR BETA TESTING",
+    "permissions": [
+      "activeTab"
+    ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": "img/icon_48.png"
+    },
+    "icons": {
+      "16": "img/icon_16.png",
+      "48": "img/icon_48.png",
+      "128": "img/icon_128.png"
+    },
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "img/icon_16.png",
+          "img/icon_48.png",
+          "img/icon_128.png"
+        ],
+        "matches": [
+          "<all_urls>"
+        ]
+      }
+    ]
+  }
+  

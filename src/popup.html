@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CatRepo</title>
+        <style>
+            body {
+                width: 500px;
+                word-wrap: break-word;
+            }
+        </style>
+    </head>
+    <body>
+        <span><b>Create Date Time:</b></span> <span id="dateTimeLabel"></span><br />
+        <span><b>[Site info]</b></span><br />
+        <span><b>TITLE:</b></span><br />
+        <span id="titleLabel"></span><br />
+        <span><b>URL:</b></span><br />
+        <span id="urlLabel"></span><br />
+        <span><b>URL(Decode):</b></span><br />
+        <span id="urlDecodeLabel"></span><br />
+        <hr />
+        <span><b>[Device info]</b></span><br />
+        <span><b>Device:</b></span> <span id="deviceLabel"></span><br />
+        <span><b>OS:</b></span> <span id="osLabel"></span><br />
+        <span><b>Browser:</b></span> <span id="browserLabel"></span><br />
+        <span><b>Cookie:</b></span> <span id="cookieEnableLabel"></span><Br />
+        <span><b>Language:</b></span> <span id="languageLabel"></span><br />
+        <span><b>Screen:</b></span> <span id="screenLabel"></span><br />
+        <span><b>Browser Screen:</b></span> <span id="outerSizeLabel"></span><br />
+        <span><b>Browser Inner Screen:</b></span> <span id="innerSizeLabel"></span><br />
+        <span><b>User Agent:</b></span><br />
+        <span id="userAgentLabel"></span><br />
+        <span><b>Screen Shot:</b></span><br />
+        <img id="screenShotImage" width="100%" /><br />
+        <hr />
+        <button id="exportButton">Export Report File (HTML)</button>
+        <hr />
+        <div id="status"></div>
+        <span id="screenShotLabel" style="display: none;"></span>
+        <span id="downloadHtmlSourceLabel" style="display: none;"></span>
+        <script src="js/main.js"></script>
+    </body>
+</html>
