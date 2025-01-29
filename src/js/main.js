@@ -1,12 +1,14 @@
 // -----------------------------------------------------------------------------
 // 「popup.html」表示時に発火する'DOMContentLoaded'イベントリスナーの設定
 // -----------------------------------------------------------------------------
-document.addEventListener("DOMContentLoaded",
+document.addEventListener(
+    "DOMContentLoaded",
     function () {
         chrome.tabs.query(
             {
                 active: true,
-                currentWindow: true
+                currentWindow: true,
+                lastFocusedWindow: true
             },
             function (tabs) {
                 try {
@@ -24,16 +26,15 @@ document.addEventListener("DOMContentLoaded",
                         document.getElementById("cookieEnableLabel").innerText = checkCookieEnable() ? "Enable" : "Disable";
                         document.getElementById("languageLabel").innerText = navigator.language;
                         document.getElementById("screenLabel").innerText = screen.width + " x " + screen.height;
-                        document.getElementById("outerSizeLabel").innerText = document.documentElement.clientWidth + " x " + document.documentElement.clientHeight;
-                        document.getElementById("innerSizeLabel").innerText = window.innerWidth + " x " + window.innerHeight;
+                        document.getElementById("browserScreenLabel").innerText = currentTab.width + " x " + currentTab.height;
                         document.getElementById("userAgentLabel").innerText = navigator.userAgent;
                         captureTab();
                     } else {
                         console.error("無効なタブ、または、URLプロパティが見つかりません。");
                     }
-                } catch (err) {
-                    document.getElementById("status").innerText = "申し訳ありません。\r\nloadTabInfoでエラーが発生しました。\r\n" + err.message;
-                    console.error("decodeURIComponent ERROR:", err);
+                } catch (ex) {
+                    document.getElementById("status").innerText = "申し訳ありません。\r\nloadTabInfoでエラーが発生しました。\r\n" + ex.message;
+                    console.error("decodeURIComponent ERROR:", ex);
                 }
             });
         document
@@ -248,7 +249,7 @@ function checkCookieEnable() {
         setCookie(checkCookieName, true);
         var value = getCookie(checkCookieName);
         return value ? true : false;
-    } catch (err) {
+    } catch (ex) {
         return false;
     }
 }
@@ -272,9 +273,9 @@ function onCapturedTab(imageUri) {
 // -----------------------------------------------------------------------------
 // スクリーンショット画像取得エラー処理
 // -----------------------------------------------------------------------------
-function onCapturedTabError(err) {
-    document.getElementById("status").innerText = "申し訳ありません。\r\nスクリーンショット画像の取得中にエラーが発生しました。\r\n" + err.message;
-    console.error("decodeURIComponent ERROR:", err);
+function onCapturedTabError(ex) {
+    document.getElementById("status").innerText = "申し訳ありません。\r\nスクリーンショット画像の取得中にエラーが発生しました。\r\n" + ex.message;
+    console.error("decodeURIComponent ERROR:", ex);
 }
 
 // -----------------------------------------------------------------------------
@@ -282,48 +283,49 @@ function onCapturedTabError(err) {
 // -----------------------------------------------------------------------------
 function exportReportFile() {
     try {
+        let bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
         let html = [
-            "<!DOCTYPE html>",
-            "<html lang=\"ja\">",
-            "    <head>",
-            "        <meta charset=\"UTF-8\" />",
-            "        <title>Web Page Report</title>",
-            "    </head>",
-            "    <body>",
-            "        <span><b>作成日時: </b></span> <span id=\"dateTimeLabel\">" + document.getElementById("dateTimeLabel").innerText + "</span><br />",
-            "        <span><b>[サイト情報]</b></span><br />",
-            "        <span><b>タイトル:</b></span><br />",
-            "        <span id=\"titleLabel\">" + document.getElementById("titleLabel").innerText + "</span><br />",
-            "        <span><b>URL:</b></span><br />",
-            "        <span id=\"urlLabel\">" + document.getElementById("urlLabel").innerText + "</span><br />",
-            "        <span><b>URL(Decode):</b></span><br />",
-            "        <span id=\"urlDecodeLabel\">" + document.getElementById("urlDecodeLabel").innerText + "</span><br />",
-            "        <hr />",
-            "        <span><b>[デバイス情報]</b></span><br />",
-            "        <span><b>Device:</b></span> <span id=\"deviceLabel\">" + document.getElementById("deviceLabel").innerText + "</span><br />",
-            "        <span><b>OS:</b></span> <span id=\"osLabel\">" + document.getElementById("osLabel").innerText + "</span><br />",
-            "        <span><b>Browser:</b></span> <span id=\"browserLabel\">" + document.getElementById("browserLabel").innerText + "</span><br />",
-            "        <span><b>Cookie:</b></span> <span id=\"cookieEnableLabel\">" + document.getElementById("cookieEnableLabel").innerText + "</span><Br />",
-            "        <span><b>Language:</b></span> <span id=\"languageLabel\">" + document.getElementById("languageLabel").innerText + "</span><br />",
-            "        <span><b>Screen:</b></span> <span id=\"screenLabel\">" + document.getElementById("screenLabel").innerText + "</span><br />",
-            "        <span><b>Browser Screen:</b></span> <span id=\"outerSizeLabel\">" + document.getElementById("outerSizeLabel").innerText + "</span><br />",
-            "        <span><b>Browser Inner Screen:</b></span> <span id=\"innerSizeLabel\">" + document.getElementById("innerSizeLabel").innerText + "</span><br />",
-            "        <span><b>User Agent:</b></span><br />",
-            "        <span id=\"userAgentLabel\">" + document.getElementById("userAgentLabel").innerText + "</span><br />",
-            "        <span><b>Screen Shot:</b></span><br />",
-            "        <img id=\"screenShotImage\" src=\"" + document.getElementById("screenShotImage").src +  "\" /><br />",
-            "        <hr />",
-            "    </body>",
-            "</html>"
+            bom,
+            "<!DOCTYPE html>\r\n",
+            "<html lang=\"ja\">\r\n",
+            "    <head>\r\n",
+            "        <meta charset=\"UTF-8\" />\r\n",
+            "        <title>Web Page Report</title>\r\n",
+            "    </head>\r\n",
+            "    <body>\r\n",
+            "        <span><b>作成日時: </b></span> <span id=\"dateTimeLabel\">" + document.getElementById("dateTimeLabel").innerText + "</span><br />\r\n",
+            "        <span><b>[サイト情報]</b></span><br />\r\n",
+            "        <span><b>タイトル:</b></span><br />\r\n",
+            "        <span id=\"titleLabel\">" + document.getElementById("titleLabel").innerText + "</span><br />\r\n",
+            "        <span><b>URL:</b></span><br />\r\n",
+            "        <span id=\"urlLabel\">" + document.getElementById("urlLabel").innerText + "</span><br />\r\n",
+            "        <span><b>URL(Decode):</b></span><br />\r\n",
+            "        <span id=\"urlDecodeLabel\">" + document.getElementById("urlDecodeLabel").innerText + "</span><br />\r\n",
+            "        <hr />\r\n",
+            "        <span><b>[デバイス情報]</b></span><br />\r\n",
+            "        <span><b>Device:</b></span> <span id=\"deviceLabel\">" + document.getElementById("deviceLabel").innerText + "</span><br />\r\n",
+            "        <span><b>OS:</b></span> <span id=\"osLabel\">" + document.getElementById("osLabel").innerText + "</span><br />\r\n",
+            "        <span><b>Browser:</b></span> <span id=\"browserLabel\">" + document.getElementById("browserLabel").innerText + "</span><br />\r\n",
+            "        <span><b>Cookie:</b></span> <span id=\"cookieEnableLabel\">" + document.getElementById("cookieEnableLabel").innerText + "</span><br />\r\n",
+            "        <span><b>Language:</b></span> <span id=\"languageLabel\">" + document.getElementById("languageLabel").innerText + "</span><br />\r\n",
+            "        <span><b>Screen:</b></span> <span id=\"screenLabel\">" + document.getElementById("screenLabel").innerText + "</span><br />\r\n",
+            "        <span><b>Browser Screen:</b></span> <span id=\"outerSizeLabel\">" + document.getElementById("browserScreenLabel").innerText + "</span><br />\r\n",
+            "        <span><b>User Agent:</b></span><br />\r\n",
+            "        <span id=\"userAgentLabel\">" + document.getElementById("userAgentLabel").innerText + "</span><br />\r\n",
+            "        <span><b>Screen Shot:</b></span><br />\r\n",
+            "        <img id=\"screenShotImage\" src=\"" + document.getElementById("screenShotImage").src +  "\" /><br />\r\n",
+            "        <hr />\r\n",
+            "    </body>\r\n",
+            "</html>\r\n"
         ];
         let blob = new Blob(html, {type: "text/html"});
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "Report.html";
         link.click();
-    } catch (err) {
-        document.getElementById("status").innerText = "申し訳ありません。\r\nレポート出力中にエラーが発生しました。\r\n" + err.message;
-        console.error("decodeURIComponent ERROR:", err);
+    } catch (ex) {
+        document.getElementById("status").innerText = "申し訳ありません。\r\nレポート出力中にエラーが発生しました。\r\n" + ex.message;
+        console.error("decodeURIComponent ERROR:", ex);
     }
 }
 
@@ -337,7 +339,7 @@ function decodeUnicode(url) {
         url = url.replace(/%u([0-9A-Fa-f]{4})/g, function (match, hex) {
             return String.fromCharCode(parseInt(hex, 16));
         });
-    } catch (err) {
+    } catch (ex) {
         // UTF-16（%uXXXX 形式）を通常の URL エンコードに変換してデコード
         url = url.replace(/%u([0-9A-Fa-f]{4})/g, function (match, hex) {
             return String.fromCharCode(parseInt(hex, 16));
@@ -345,9 +347,9 @@ function decodeUnicode(url) {
     }
     try {
         url = decodeURIComponent(url);
-    } catch (err) {
-        document.getElementById("status").innerText = "申し訳ありません。\r\nURLのデコード処理中にエラーが発生しました。\r\n" + err.message;
-        console.error("decodeURIComponent ERROR:", url, err);
+    } catch (ex) {
+        document.getElementById("status").innerText = "申し訳ありません。\r\nURLのデコード処理中にエラーが発生しました。\r\n" + ex.message;
+        console.error("decodeURIComponent ERROR:", url, ex);
     }
     return url;
 }
