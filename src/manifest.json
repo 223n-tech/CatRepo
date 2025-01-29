@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "CatRepo - BETA",
-    "version": "0.1",
+    "version": "0.2",
     "description": "Gather the information necessary to report a problem with a web page. THIS EXTENSION IS FOR BETA TESTING",
     "permissions": [
       "activeTab"
